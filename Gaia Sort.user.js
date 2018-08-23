@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Gaia Sort
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.1.1
 // @description  Inventory color-sorter.
 // @author       cae (twitter @mmt_n_)
 // @match        https://www.gaiaonline.com/inventory*
