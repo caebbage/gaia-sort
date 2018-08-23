@@ -12,7 +12,7 @@
 
 (function() {
     'use strict';
-    var values = [], itemcnt = 0, colorThief;
+    var values = [], itemcnt = 0, colorThief, noerror = true;
     console.log('hi!')
     $('body').prepend('<button id="sorterbtn" style="position:fixed;z-index:999999999;background:white;padding:20px;font-size:200%;bottom:1em;right:1em">sort inventory</button>')
     $('#sorterbtn').on("click", function () {
@@ -76,46 +76,49 @@
             let count = 0;
             let targ = $('.yui-nav .selected em').text().replace('!','').toLowerCase()
             $('#' + targ + ' img').each(function (i, ele) {
-                $(ele).load(() => {
-                    try {
-                        // get color & clone of original
-                        let res = colorThief.getColor(ele)
-                        let el = $(ele).parent()[0].cloneNode(true)
-
-                        // set slot, color, and the element copy
-                        values[i] = [$(el).parent()[0].slot, res, $(ele).parent()[0]]
-                        count ++
-                        if (count >= $('#' + targ + ' img').length) {
-                            console.log('Colors found.')
-                            sorter.sort()
-                        }
-                    } catch (err) {
-                        // if that doesn't work, crop canvas n try again (too much transparency fucks it up I guess
-
-                        let canvas = $('<canvas/>'),
-                            context = canvas[0].getContext('2d')
-
-                        context.drawImage(ele, 7, 7, 16, 16, -1, -1, 32, 32);
-
-
-                        // then try again
+                if (noerror) {
+                    $(ele).load(() => {
                         try {
-                            let res = colorThief.getColor(canvas[0])
+                            // get color & clone of original
+                            let res = colorThief.getColor(ele)
                             let el = $(ele).parent()[0].cloneNode(true)
-                            values[i] = [$(ele).parent()[0].slot, res, $(ele).parent()[0]]
+
+                            // set slot, color, and the element copy
+                            values[i] = [$(el).parent()[0].slot, res, $(ele).parent()[0]]
                             count ++
                             if (count >= $('#' + targ + ' img').length) {
                                 console.log('Colors found.')
                                 sorter.sort()
                             }
                         } catch (err) {
-                            // past that you're probably fucked tbh
-                            console.log('something went wrong on ' + ele.alt)
-                            console.log(ele)
-                            alert("Huh, there's a problem somewhere. Try again?")
-                            return false
+                            // if that doesn't work, crop canvas n try again (too much transparency fucks it up I guess
+
+                            let canvas = $('<canvas/>'),
+                                context = canvas[0].getContext('2d')
+
+                            context.drawImage(ele, 7, 7, 16, 16, -1, -1, 32, 32);
+
+
+                            // then try again
+                            try {
+                                let res = colorThief.getColor(canvas[0])
+                                let el = $(ele).parent()[0].cloneNode(true)
+                                values[i] = [$(ele).parent()[0].slot, res, $(ele).parent()[0]]
+                                count ++
+                                if (count >= $('#' + targ + ' img').length) {
+                                    console.log('Colors found.')
+                                    sorter.sort()
+                                }
+                            } catch (err) {
+                                // past that you're probably fucked tbh
+                                console.log('something went wrong on ' + ele.alt)
+                                console.log(ele)
+                                alert("Huh, there's a problem somewhere. Refresh and try again?")
+                                return false
+                            }
                         }
-                    }})
+                    })
+                }
             })
         },
         // adapted from https://stackoverflow.com/questions/11923659/javascript-sort-rgb-values
