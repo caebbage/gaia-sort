@@ -114,6 +114,7 @@
                                 console.log('something went wrong on ' + ele.alt)
                                 console.log(ele)
                                 alert("Huh, there's a problem somewhere. Refresh and try again?")
+                                noerror = false
                                 return false
                             }
                         }
